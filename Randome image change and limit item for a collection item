@@ -1,0 +1,59 @@
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    let allImages = Array.from(document.querySelectorAll(".shuffle-logo .gallery-image img"));
+    let visibleImages = [];
+    let hiddenImages = [];
+
+    function shuffle(array) {
+        return array.sort(() => Math.random() - 0.5);
+    }
+
+    function initializeImages() {
+        let numVisible = window.innerWidth < 768 ? 5 : 14; // Show 5 images on mobile, 14 on larger screens
+        let shuffled = shuffle(allImages);
+        visibleImages = shuffled.slice(0, numVisible);
+        hiddenImages = shuffled.slice(numVisible);
+
+        // Show only the selected number of images
+        allImages.forEach(img => img.closest(".gallery-image").style.display = "none");
+        visibleImages.forEach(img => img.closest(".gallery-image").style.display = "block");
+
+        // Add transition effect to all visible images
+        visibleImages.forEach(img => {
+            img.style.transition = "opacity 0.3s linear";
+        });
+    }
+
+    function swapImage() {
+        if (hiddenImages.length === 0) return;
+
+        let randomVisibleIndex = Math.floor(Math.random() * visibleImages.length);
+        let randomHiddenIndex = Math.floor(Math.random() * hiddenImages.length);
+
+        let visibleImg = visibleImages[randomVisibleIndex];
+        let hiddenImg = hiddenImages[randomHiddenIndex];
+
+        // Apply fade-out effect
+        visibleImg.style.opacity = "0";
+
+        setTimeout(() => {
+            // Swap only the src of the images
+            let tempSrc = hiddenImg.src;
+            hiddenImg.src = visibleImg.src;
+            visibleImg.src = tempSrc;
+
+            // Apply fade-in effect
+            visibleImg.style.opacity = "1";
+        }, 300); // Wait for fade-out before changing src
+    }
+
+    // Initialize images on page load
+    initializeImages();
+
+    // Swap one image every 3 seconds
+    setInterval(swapImage, 3000);
+
+    // Reinitialize images on window resize
+    window.addEventListener("resize", initializeImages);
+});
+</script>
